@@ -367,7 +367,7 @@ export class ImportManager {
     geometry.name = name;
     // Set a custom scale if provided
     if (scale) {
-      geometry.scale.set(scale, scale, scale);
+      geometry.scale.setScalar(scale);
     }
     geometry.traverse((child) => {
       if (child instanceof Mesh) {
@@ -385,6 +385,7 @@ export class ImportManager {
             color: color,
             shininess: 0,
             side: side,
+            transparent: true,
           });
           // Setting up the clipping planes
           child.material.clippingPlanes = this.clipPlanes;
