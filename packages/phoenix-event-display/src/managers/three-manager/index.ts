@@ -90,11 +90,11 @@ export class ThreeManager {
    */
   public init(configuration: Configuration) {
     // Set the clipping planes
-    this.clipPlanes = configuration.clippingPlanes ?? [
+    this.clipPlanes = [
+      // these 2 planes are used internally for the clipping functionnality
       new Plane(new Vector3(0, 1, 0), 0),
-      new Plane(new Vector3(0, -1, 0), 0),
-      new Plane(new Vector3(0, 0, 1), -15000),
-    ];
+      new Plane(new Vector3(0, -1, 0), 0) ].concat(
+        configuration.clippingPlanes);
     // Scene manager
     this.sceneManager = new SceneManager(this.ignoreList);
     // IO Managers
