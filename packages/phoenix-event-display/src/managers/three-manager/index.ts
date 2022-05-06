@@ -5,6 +5,7 @@ import {
   Vector3,
   Plane,
   Quaternion,
+  Material,
   AmbientLight,
   DirectionalLight,
   AxesHelper,
@@ -73,6 +74,8 @@ export class ThreeManager {
   ];
   /** Clipping planes for clipping geometry. */
   private clipPlanes: Plane[];
+  /** status of cliping intersection */
+  private clipIntersection: boolean;
 
   /**
    * Create the three manager for three.js operations.
@@ -81,6 +84,7 @@ export class ThreeManager {
   constructor(private infoLogger: InfoLogger) {
     this.rendererManager = new RendererManager();
     this.loadingManager = new LoadingManager();
+    this.clipIntersection = true;
   }
 
   /**
@@ -101,6 +105,7 @@ export class ThreeManager {
     this.exportManager = new ExportManager();
     this.importManager = new ImportManager(
       this.clipPlanes,
+      this.clipIntersection,
       SceneManager.EVENT_DATA_ID,
       SceneManager.GEOMETRIES_ID
     );
@@ -238,23 +243,33 @@ export class ThreeManager {
    * @param openingAngle The opening angle of clipping.
    */
   public setClippingAngle(startingAngle: number, openingAngle: number) {
-    const startingAngleQuaternion = new Quaternion();
-    startingAngleQuaternion.setFromAxisAngle(
-      new Vector3(0, 0, 1),
-      (startingAngle * Math.PI) / 180
-    );
-    this.clipPlanes[0].normal
-      .set(0, -1, 0)
-      .applyQuaternion(startingAngleQuaternion);
-
-    const openingAngleQuaternion = new Quaternion();
-    openingAngleQuaternion.setFromAxisAngle(
-      new Vector3(0, 0, 1),
-      ((startingAngle + openingAngle) * Math.PI) / 180
-    );
-    this.clipPlanes[1].normal
-      .set(0, 1, 0)
-      .applyQuaternion(openingAngleQuaternion);
+      this.clipIntersection = (openingAngle < 180);
+      const startingAngleQuaternion = new Quaternion();
+      startingAngleQuaternion.setFromAxisAngle(
+          new Vector3(0, 0, 1),
+          (startingAngle * Math.PI) / 180
+      );
+      this.clipPlanes[0].normal
+          .set(0, -1, 0)
+          .applyQuaternion(startingAngleQuaternion);
+      const openingAngleQuaternion = new Quaternion();
+      openingAngleQuaternion.setFromAxisAngle(
+          new Vector3(0, 0, 1),
+          ((startingAngle + openingAngle) * Math.PI) / 180
+      );
+      this.clipPlanes[1].normal
+          .set(0, 1, 0)
+          .applyQuaternion(openingAngleQuaternion);
+      const geometries = this.sceneManager.getGeometries();
+      for (const geometry of geometries.children) {
+          geometry.traverse((child) => {
+              if (child instanceof Mesh) {
+                  if (child.material instanceof Material) {
+                      child.material.clipIntersection = this.clipIntersection;
+                  }
+              }
+          });
+      }
   }
 
   /**
