@@ -52,21 +52,22 @@ export class LHCbComponent implements OnInit {
         new PresetView('Center View', [-500, 1000, 0], 'top-cube'),
         new PresetView('Left View', [0, 0, -6000], 'left-cube'),
       ],
-      defaultView: [-18000, 0, 15000],
+      //defaultView: [-18000, 0, 15000],
+      defaultView: [-18, 0, 15],
       phoenixMenuRoot: this.phoenixMenuRoot,
-      defaultEventFile: {
+      /*defaultEventFile: {
         eventFile: 'assets/files/lhcb/LHCbEventDataV2.json',
         eventType: 'json',
-      },
+      },*/
       clippingPlanes: [
-        new Plane(new Vector3(0, 0, 1), -20000),
       ],
     };
 
     this.eventDisplay.init(configuration);
 
     this.eventDisplay.loadGLTFGeometry(
-      'assets/geometry/LHCb/LHCb.gltf',
+      //'assets/geometry/LHCb/LHCb.gltf',
+      'assets/geometry/LHCb/Box.gltf',
       '', // ignored in case of multiple scenes
       '',
       1,
